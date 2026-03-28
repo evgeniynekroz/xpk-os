@@ -5,13 +5,13 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -41,7 +41,7 @@ fun smartUrl(input: String): String {
     val t = input.trim()
     return when {
         t.startsWith("http://") || t.startsWith("https://") -> t
-        t.contains(" ") || (!t.contains(".")) -> "https://www.google.com/search?q=${t.replace(" ", "+")}"
+        t.contains(" ") || !t.contains(".") -> "https://www.google.com/search?q=${t.replace(" ", "+")}"
         else -> "https://$t"
     }
 }
@@ -90,7 +90,6 @@ fun XPKApp() {
     }
 }
 
-// --- СПЛЭШ ---
 @Composable
 fun SplashScreen(onDone: () -> Unit) {
     val scale = remember { Animatable(0.7f) }
@@ -121,19 +120,27 @@ fun SplashScreen(onDone: () -> Unit) {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Language, contentDescription = null, tint = Color.White, modifier = Modifier.size(48.dp))
+                Icon(
+                    Icons.Default.Language,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(48.dp)
+                )
             }
             Spacer(modifier = Modifier.height(20.dp))
             Text("XPK Browser", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             Text("by @NekrozDEV", color = SoftPurple, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(32.dp))
-            CircularProgressIndicator(color = SoftPurple, strokeWidth = 2.dp, modifier = Modifier.size(24.dp))
+            CircularProgressIndicator(
+                color = SoftPurple,
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }
 
-// --- ГЛАВНЫЙ ЭКРАН ---
 @Composable
 fun HomeScreen(onNavigate: (String) -> Unit, onOpenTabs: () -> Unit) {
     var urlInput by remember { mutableStateOf("") }
@@ -144,25 +151,28 @@ fun HomeScreen(onNavigate: (String) -> Unit, onOpenTabs: () -> Unit) {
         var i = 0
         while (true) {
             val text = placeholders[i % placeholders.size]
-            for (j in 0..text.length) { placeholder.value = text.substring(0, j); delay(70) }
+            for (j in 0..text.length) {
+                placeholder.value = text.substring(0, j)
+                delay(70)
+            }
             delay(1800)
-            for (j in text.length downTo 0) { placeholder.value = text.substring(0, j); delay(35) }
+            for (j in text.length downTo 0) {
+                placeholder.value = text.substring(0, j)
+                delay(35)
+            }
             delay(300)
             i++
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize().background(BgBlack)
-    ) {
-        // Фоновое свечение
+    Box(modifier = Modifier.fillMaxSize().background(BgBlack)) {
         Box(
             modifier = Modifier
                 .size(350.dp)
                 .align(Alignment.Center)
-                .offset(y = (-60).dp)
+                .offset(y = (-80).dp)
                 .background(
-                    Brush.radialGradient(listOf(GlowPurple.copy(alpha = 0.4f), Color.Transparent)),
+                    Brush.radialGradient(listOf(GlowPurple.copy(alpha = 0.35f), Color.Transparent))
                 )
         )
 
@@ -171,11 +181,9 @@ fun HomeScreen(onNavigate: (String) -> Unit, onOpenTabs: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(100.dp))
-
             Text("XPK Browser", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Поле поиска
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -184,7 +192,12 @@ fun HomeScreen(onNavigate: (String) -> Unit, onOpenTabs: () -> Unit) {
                     .padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.size(20.dp)
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 TextField(
                     value = urlInput,
@@ -203,14 +216,20 @@ fun HomeScreen(onNavigate: (String) -> Unit, onOpenTabs: () -> Unit) {
                 )
                 IconButton(
                     onClick = { onNavigate(if (urlInput.isNotBlank()) urlInput else "https://google.com") },
-                    modifier = Modifier.size(40.dp).background(SoftPurple, RoundedCornerShape(20.dp))
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(SoftPurple, RoundedCornerShape(20.dp))
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
         }
 
-        // Нижняя панель
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -233,7 +252,6 @@ fun HomeScreen(onNavigate: (String) -> Unit, onOpenTabs: () -> Unit) {
     }
 }
 
-// --- БРАУЗЕР ---
 @Composable
 fun BrowserScreen(url: String, onHome: () -> Unit, onOpenTabs: () -> Unit) {
     var isMinimized by remember { mutableStateOf(false) }
@@ -261,7 +279,6 @@ fun BrowserScreen(url: String, onHome: () -> Unit, onOpenTabs: () -> Unit) {
             modifier = Modifier.fillMaxSize()
         )
 
-        // Индикатор загрузки
         if (isLoading) {
             Box(
                 modifier = Modifier
@@ -272,7 +289,6 @@ fun BrowserScreen(url: String, onHome: () -> Unit, onOpenTabs: () -> Unit) {
             )
         }
 
-        // Панель управления
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -281,7 +297,9 @@ fun BrowserScreen(url: String, onHome: () -> Unit, onOpenTabs: () -> Unit) {
             if (isMinimized) {
                 IconButton(
                     onClick = { isMinimized = false },
-                    modifier = Modifier.size(48.dp).background(GlassWhite, RoundedCornerShape(24.dp))
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(GlassWhite, RoundedCornerShape(24.dp))
                 ) {
                     Icon(Icons.Default.KeyboardArrowUp, contentDescription = null, tint = Color.White)
                 }
@@ -295,33 +313,51 @@ fun BrowserScreen(url: String, onHome: () -> Unit, onOpenTabs: () -> Unit) {
                 ) {
                     IconButton(
                         onClick = { isMinimized = true },
-                        modifier = Modifier.size(40.dp).background(RedBtn, RoundedCornerShape(20.dp))
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(RedBtn, RoundedCornerShape(20.dp))
                     ) {
                         Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color.White)
                     }
                     Spacer(modifier = Modifier.width(4.dp))
-                    IconButton(onClick = onHome) { Icon(Icons.Default.Home, contentDescription = null, tint = Color.White) }
-                    IconButton(onClick = { isDesktopMode = !isDesktopMode }) {
-                        Icon(if (isDesktopMode) Icons.Default.PhoneAndroid else Icons.Default.Computer, contentDescription = null, tint = Color.White)
+                    IconButton(onClick = onHome) {
+                        Icon(Icons.Default.Home, contentDescription = null, tint = Color.White)
                     }
-                    IconButton(onClick = onOpenTabs) { Icon(Icons.Default.FilterNone, contentDescription = null, tint = Color.White) }
+                    IconButton(onClick = { isDesktopMode = !isDesktopMode }) {
+                        Icon(
+                            if (isDesktopMode) Icons.Default.PhoneAndroid else Icons.Default.Computer,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(onClick = onOpenTabs) {
+                        Icon(Icons.Default.FilterNone, contentDescription = null, tint = Color.White)
+                    }
                 }
             }
         }
     }
 }
 
-// --- ВКЛАДКИ ---
 @Composable
 fun TabsScreen(tabs: List<String>, activeUrl: String, onSelect: (String) -> Unit, onClose: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().background(BgBlack).padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BgBlack)
+            .padding(16.dp)
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Вкладки (${tabs.size})", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            IconButton(onClick = onClose) { Icon(Icons.Default.Close, contentDescription = null, tint = Color.White) }
+            IconButton(onClick = onClose) {
+                Icon(Icons.Default.Close, contentDescription = null, tint = Color.White)
+            }
         }
 
         if (tabs.isEmpty()) {
@@ -329,23 +365,25 @@ fun TabsScreen(tabs: List<String>, activeUrl: String, onSelect: (String) -> Unit
                 Text("Нет открытых вкладок", color = Color.Gray)
             }
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(tabs) { tabUrl ->
+                tabs.forEach { tabUrl ->
                     Box(
                         modifier = Modifier
+                            .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp))
-                            .background(if (tabUrl == activeUrl) GlowPurple.copy(alpha = 0.4f) else GlassWhite)
+                            .background(
+                                if (tabUrl == activeUrl) GlowPurple.copy(alpha = 0.4f) else GlassWhite
+                            )
                             .clickable { onSelect(tabUrl) }
                             .padding(16.dp)
-                            .aspectRatio(0.9f),
-                        contentAlignment = Alignment.Center
                     ) {
-                        Text(tabUrl, color = Color.White, fontSize = 11.sp, maxLines = 3)
+                        Text(tabUrl, color = Color.White, fontSize = 13.sp, maxLines = 2)
                     }
                 }
             }
         }
+    }
+}
